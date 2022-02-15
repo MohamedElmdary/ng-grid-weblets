@@ -1,0 +1,57 @@
+<form [formGroup]="form">
+  <mat-form-field appearance="outline">
+    <mat-label>Name</mat-label>
+    <input
+      #nameInput
+      matInput
+      formControlName="name"
+      placeholder="K8S Cluster Name"
+      autocomplete="off"
+    />
+    <mat-hint align="end">{{ nameInput.value?.length || 0 }}/15</mat-hint>
+
+    <mat-error *ngIf="name.errors">
+      <span *ngIf="name.errors['required']">Name is required.</span>
+      <span *ngIf="name.errors['minlength']">Name min length is 2 chars.</span>
+      <span *ngIf="name.errors['maxlength']">Name max length is 15 chars.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Cluster Token</mat-label>
+    <input
+      matInput
+      [type]="hide ? 'password' : 'text'"
+      formControlName="token"
+      placeholder="K8S Cluster Token"
+      autocomplete="off"
+    />
+    <button
+      mat-icon-button
+      matSuffix
+      (click)="hide = !hide"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="hide"
+    >
+      <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+    </button>
+
+    <mat-error *ngIf="token.errors">
+      <span *ngIf="token.errors['required']">Cluster Token is required.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Public SSH Key</mat-label>
+    <input
+      matInput
+      formControlName="ssh"
+      placeholder="Your Public SSH Key"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="ssh.errors">
+      <span *ngIf="ssh.errors['required']">Public SSH Key is required.</span>
+    </mat-error>
+  </mat-form-field>
+</form>

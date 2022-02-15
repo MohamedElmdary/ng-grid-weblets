@@ -1,0 +1,13 @@
+<mat-tab-group animationDuration="0" mat-align-tabs="center">
+  <mat-tab
+    *ngFor="let worker of workers; let i = index"
+    [label]="'Worker ' + i"
+  >
+    <br />
+    <app-worker
+      [form]="worker"
+      [removable]="true"
+      (remove)="form.removeAt(i)"
+    ></app-worker>
+  </mat-tab>
+</mat-tab-group>

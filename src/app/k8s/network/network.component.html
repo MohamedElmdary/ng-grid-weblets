@@ -1,0 +1,33 @@
+<form [formGroup]="form">
+  <mat-form-field appearance="outline">
+    <mat-label>Name</mat-label>
+    <input
+      #nameInput
+      matInput
+      formControlName="name"
+      placeholder="Network Name"
+      autocomplete="off"
+    />
+    <mat-hint align="end">{{ nameInput.value?.length || 0 }}/15</mat-hint>
+
+    <mat-error *ngIf="name.errors">
+      <span *ngIf="name.errors['required']">Name is required.</span>
+      <span *ngIf="name.errors['minlength']">Name min length is 2 chars.</span>
+      <span *ngIf="name.errors['maxlength']">Name max length is 15 chars.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Network IP Range</mat-label>
+    <input
+      matInput
+      formControlName="ipRange"
+      placeholder="Network IP Range"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="ipRange.errors">
+      <span *ngIf="ipRange.errors['required']">IP Range is required.</span>
+    </mat-error>
+  </mat-form-field>
+</form>

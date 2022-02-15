@@ -1,0 +1,93 @@
+<section class="k8s">
+  <mat-card>
+    <h4 class="k8s__title mat-display-1">Deploy a Kubernetes Cluster</h4>
+    <mat-divider></mat-divider>
+
+    <mat-stepper orientation="horizontal" linear selectedIndex="4">
+      <mat-step label="Base" [stepControl]="base">
+        <app-base [form]="base"></app-base>
+
+        <div class="to-end">
+          <button
+            mat-button
+            matStepperNext
+            color="primary"
+            [disabled]="base.invalid"
+          >
+            Next
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step label="Network" [stepControl]="network">
+        <app-network [form]="network"></app-network>
+
+        <div class="to-end">
+          <button mat-button matStepperPrevious color="warn">Back</button>
+          <button
+            mat-button
+            matStepperNext
+            color="primary"
+            [disabled]="network.invalid"
+          >
+            Next
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step label="Master" [stepControl]="master">
+        <app-worker [form]="master"></app-worker>
+        <div class="to-end">
+          <button mat-button matStepperPrevious color="warn">Back</button>
+          <button
+            mat-button
+            matStepperNext
+            color="primary"
+            [disabled]="master.invalid"
+          >
+            Next
+          </button>
+        </div>
+      </mat-step>
+      <mat-step label="Workers" [stepControl]="workers">
+        <div class="to-end">
+          <button mat-stroked-button color="primary" (click)="addWorker()">
+            <mat-icon>add</mat-icon>
+            <span> Add Worker </span>
+          </button>
+        </div>
+
+        <app-workers
+          [form]="workers"
+          *ngIf="workers.controls.length"
+        ></app-workers>
+
+        <div class="to-end">
+          <button mat-button matStepperPrevious color="warn">Back</button>
+          <button
+            mat-button
+            matStepperNext
+            color="primary"
+            [disabled]="workers.invalid"
+          >
+            Next
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step label="Deploy" [stepControl]="k8sForm">
+        <div class="to-end">
+          <button mat-button matStepperPrevious color="warn">Back</button>
+          <button
+            mat-button
+            color="primary"
+            [disabled]="k8sForm.invalid"
+            (click)="deployK8s()"
+          >
+            Deploy
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </mat-card>
+</section>

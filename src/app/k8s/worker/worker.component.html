@@ -1,0 +1,121 @@
+<div class="to-end" *ngIf="removable">
+  <button mat-stroked-button color="warn" (click)="remove.emit()">
+    <mat-icon>delete</mat-icon>
+    <span> Delete Worker </span>
+  </button>
+</div>
+
+<form [formGroup]="form">
+  <mat-form-field appearance="outline">
+    <mat-label>Name</mat-label>
+    <input
+      #nameInput
+      matInput
+      formControlName="name"
+      placeholder="Worker Name"
+      autocomplete="off"
+    />
+    <mat-hint align="end">{{ nameInput.value?.length || 0 }}/15</mat-hint>
+
+    <mat-error *ngIf="name.errors">
+      <span *ngIf="name.errors['required']">Name is required.</span>
+      <span *ngIf="name.errors['minlength']">Name min length is 2 chars.</span>
+      <span *ngIf="name.errors['maxlength']">Name max length is 15 chars.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>CPU (Cores)</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="cpu"
+      placeholder="CPU"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="cpu.errors">
+      <span *ngIf="cpu.errors['required']">CPU is required.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Memory (MB)</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="memory"
+      placeholder="Memory"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="memory.errors">
+      <span *ngIf="memory.errors['required']">Memory is required.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Disk Size (GB)</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="disk"
+      placeholder="Disk Size"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="disk.errors">
+      <span *ngIf="disk.errors['required']">Disk size is required.</span>
+      <span *ngIf="disk.errors['min']">Disk min size is 1 GB.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <div class="switch-container">
+    <mat-slide-toggle color="primary" formControlName="ipv4">
+      Public IP V4
+    </mat-slide-toggle>
+  </div>
+
+  <div class="switch-container">
+    <mat-slide-toggle color="primary" formControlName="ipv6">
+      Public IP V6
+    </mat-slide-toggle>
+  </div>
+
+  <div class="switch-container">
+    <mat-slide-toggle color="primary" formControlName="planetary">
+      Planetary Network
+    </mat-slide-toggle>
+  </div>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Root File System Size (GB)</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="rootFs"
+      placeholder="Root File System Size"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="rootFs.errors">
+      <span *ngIf="rootFs.errors['required']">Root FS size is required.</span>
+      <span *ngIf="rootFs.errors['min']">Root FS min size is 0.5 GB.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Node ID</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="nodeId"
+      placeholder="Node ID"
+      autocomplete="off"
+    />
+
+    <mat-error *ngIf="nodeId.errors">
+      <span *ngIf="nodeId.errors['required']">Node ID is required.</span>
+    </mat-error>
+  </mat-form-field>
+</form>
