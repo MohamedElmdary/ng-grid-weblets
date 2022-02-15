@@ -38,7 +38,7 @@ export class K8sComponent {
 
     master: this.__createWorker(),
 
-    workers: this.fb.array([]),
+    workers: this.fb.array([this.__createWorker()]),
   });
 
   get base(): FormGroup {
@@ -75,13 +75,25 @@ export class K8sComponent {
           cpu: 2,
           memory: 4 * 1024,
           disk: 50,
-          ipv4: false,
+          ipv4: true,
           ipv6: false,
           planetary: true,
           rootFs: 2,
-          nodeId: 8,
+          nodeId: 5,
         },
-        workers: [],
+        workers: [
+          {
+            name: 'W' + debug,
+            cpu: 2,
+            memory: 4 * 1024,
+            disk: 50,
+            ipv4: false,
+            ipv6: false,
+            planetary: true,
+            rootFs: 2,
+            nodeId: 5,
+          },
+        ],
       });
     }
   }
