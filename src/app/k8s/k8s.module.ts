@@ -14,6 +14,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 /* Components */
 import { K8sComponent } from './k8s.component';
@@ -42,6 +43,7 @@ import { WorkersComponent } from './workers/workers.component';
     MatIconModule,
     MatSlideToggleModule,
     MatTabsModule,
+    MatProgressSpinnerModule,
   ],
   entryComponents: [K8sComponent],
 })

@@ -8,6 +8,8 @@ import { environment } from '../../environments/environment';
   styleUrls: ['./k8s.component.scss'],
 })
 export class K8sComponent {
+  deploying = false;
+
   k8sForm = this.fb.group({
     base: this.fb.group({
       name: [
@@ -109,7 +111,73 @@ export class K8sComponent {
     this.workers.push(this.__createWorker());
   }
 
-  public deployK8s(): void {
-    console.log(this.k8sForm.value);
+  private __createNode(data: any) {
+    const { KubernetesNodeModel } = window.configs.grid3_client;
+    console.log({ data });
+
+    const node = new KubernetesNodeModel();
+    node.name = data.name;
+    node.node_id = data.nodeId;
+    node.cpu = data.cpu;
+    node.disk_size = data.disk;
+    node.memory = data.memory;
+    node.public_ip = data.ipv4;
+    node.public_ip6 = data.ipv6;
+    node.rootfs_size = data.rootFs;
+    node.planetary = data.planetary;
+    return node;
+  }
+
+  private get __network() {
+    const { NetworkModel } = window.configs.grid3_client;
+    const { name, ipRange } = this.network.value;
+
+    const network = new NetworkModel();
+    network.name = name;
+    network.ip_range = ipRange;
+    return network;
+  }
+
+  public async deployK8s(): Promise<void> {
+    this.deploying = true;
+
+    // prettier-ignore
+    const { K8SModel, GridClient, NetworkEnv, BackendStorageType } = window.configs.grid3_client;
+    const { HTTPMessageBusClient } = window.configs.ts_rmb_http_client;
+
+    const masterNodes = [this.__createNode(this.master.value)];
+    const workerNodes = this.workers.value.map(this.__createNode.bind(this));
+
+    const { name, token, ssh } = this.base.value;
+    const k8s = new K8SModel();
+    k8s.name = name;
+    k8s.secret = token;
+    k8s.network = this.__network;
+    k8s.masters = masterNodes;
+    k8s.workers = workerNodes;
+    k8s.metadata = '';
+    k8s.description = '';
+    k8s.ssh_key = ssh;
+
+    const grid = new GridClient(
+      NetworkEnv.dev,
+      'guilt leaf sure wheel shield broom retreat zone stove cycle candy nation',
+      'secret',
+      new HTTPMessageBusClient(0, '', '', ''),
+      undefined,
+      BackendStorageType.tfkvstore
+    );
+
+    try {
+      await grid.connect();
+      await grid.k8s.deploy(k8s);
+      const details = await grid.k8s.getObj(name);
+
+      this.deploying = false;
+      console.log({ details });
+    } catch (error) {
+      this.deploying = false;
+      console.log({ error });
+    }
   }
 }

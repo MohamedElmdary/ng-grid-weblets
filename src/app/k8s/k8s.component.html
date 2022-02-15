@@ -76,6 +76,8 @@
       </mat-step>
 
       <mat-step label="Deploy" [stepControl]="k8sForm">
+        <mat-spinner *ngIf="deploying"></mat-spinner>
+
         <div class="to-end">
           <button mat-button matStepperPrevious color="warn">Back</button>
           <button
