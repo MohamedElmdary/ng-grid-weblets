@@ -3,7 +3,7 @@
     <h4 class="k8s__title mat-display-1">Deploy a Kubernetes Cluster</h4>
     <mat-divider></mat-divider>
 
-    <mat-stepper orientation="horizontal" linear>
+    <mat-stepper orientation="horizontal" linear selectedIndex="2">
       <mat-step label="Base" [stepControl]="base">
         <app-base [form]="base"></app-base>
 
@@ -12,7 +12,7 @@
             mat-button
             matStepperNext
             color="primary"
-            [disabled]="base.invalid"
+            [disabled]="base.status !== 'VALID'"
           >
             Next
           </button>
@@ -28,7 +28,7 @@
             mat-button
             matStepperNext
             color="primary"
-            [disabled]="network.invalid"
+            [disabled]="network.status !== 'VALID'"
           >
             Next
           </button>
@@ -43,7 +43,7 @@
             mat-button
             matStepperNext
             color="primary"
-            [disabled]="master.invalid"
+            [disabled]="master.status !== 'VALID'"
           >
             Next
           </button>
@@ -68,7 +68,7 @@
             mat-button
             matStepperNext
             color="primary"
-            [disabled]="workers.invalid"
+            [disabled]="workers.status !== 'VALID'"
           >
             Next
           </button>

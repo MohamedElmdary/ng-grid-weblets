@@ -12,7 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -22,6 +22,7 @@ import { BaseComponent } from './base/base.component';
 import { NetworkComponent } from './network/network.component';
 import { WorkerComponent } from './worker/worker.component';
 import { WorkersComponent } from './workers/workers.component';
+import { NodeIdModule } from '../shared/modules/node-id/node-id.module';
 
 @NgModule({
   declarations: [
@@ -40,10 +41,11 @@ import { WorkersComponent } from './workers/workers.component';
     MatButtonModule,
     MatCardModule,
     MatDividerModule,
+    MatCheckboxModule,
     MatIconModule,
-    MatSlideToggleModule,
     MatTabsModule,
     MatProgressSpinnerModule,
+    NodeIdModule,
   ],
   entryComponents: [K8sComponent],
 })

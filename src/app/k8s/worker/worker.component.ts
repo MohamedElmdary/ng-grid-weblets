@@ -16,6 +16,10 @@ export class WorkerComponent {
     return this.form.get('name') as FormControl;
   }
 
+  get ipv4(): FormControl {
+    return this.form.get('ipv4') as FormControl;
+  }
+
   get cpu(): FormControl {
     return this.form.get('cpu') as FormControl;
   }

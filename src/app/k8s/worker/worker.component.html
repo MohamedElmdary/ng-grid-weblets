@@ -71,21 +71,21 @@
   </mat-form-field>
 
   <div class="switch-container">
-    <mat-slide-toggle color="primary" formControlName="ipv4">
+    <mat-checkbox color="primary" formControlName="ipv4">
       Public IP V4
-    </mat-slide-toggle>
+    </mat-checkbox>
   </div>
 
   <div class="switch-container">
-    <mat-slide-toggle color="primary" formControlName="ipv6">
+    <mat-checkbox color="primary" formControlName="ipv6">
       Public IP V6
-    </mat-slide-toggle>
+    </mat-checkbox>
   </div>
 
   <div class="switch-container">
-    <mat-slide-toggle color="primary" formControlName="planetary">
+    <mat-checkbox color="primary" formControlName="planetary">
       Planetary Network
-    </mat-slide-toggle>
+    </mat-checkbox>
   </div>
 
   <mat-form-field appearance="outline">
@@ -104,18 +104,8 @@
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Node ID</mat-label>
-    <input
-      matInput
-      type="number"
-      formControlName="nodeId"
-      placeholder="Node ID"
-      autocomplete="off"
-    />
-
-    <mat-error *ngIf="nodeId.errors">
-      <span *ngIf="nodeId.errors['required']">Node ID is required.</span>
-    </mat-error>
-  </mat-form-field>
+  <app-node-id-selector
+    [nodeId]="nodeId"
+    [watch]="[cpu, memory, disk, ipv4]"
+  ></app-node-id-selector>
 </form>

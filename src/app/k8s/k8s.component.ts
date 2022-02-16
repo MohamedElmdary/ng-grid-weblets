@@ -1,7 +1,22 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import {
+  FormGroup,
+  FormBuilder,
+  Validators,
+  FormArray,
+  FormControl,
+} from '@angular/forms';
 import { environment } from '../../environments/environment';
-
+import { from } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { GridService } from '../shared/services/grid.service';
+import { ValidatorsService } from '../shared/services/validators.service';
+import {
+  K8SModel,
+  FilterOptions,
+  KubernetesNodeModel,
+  NetworkModel,
+} from 'grid3_client';
 @Component({
   selector: 'app-k8s',
   templateUrl: './k8s.component.html',
@@ -57,7 +72,11 @@ export class K8sComponent {
     return this.k8sForm.get('workers') as FormArray;
   }
 
-  constructor(private readonly fb: FormBuilder) {
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly gridService: GridService,
+    private readonly validatorsService: ValidatorsService
+  ) {
     if (!environment.production) {
       const debug = new Date().getTime().toString().slice(0, 5);
       this.k8sForm.setValue({
@@ -79,7 +98,7 @@ export class K8sComponent {
           ipv6: false,
           planetary: true,
           rootFs: 2,
-          nodeId: 5,
+          nodeId: null,
         },
         workers: [
           {
@@ -95,11 +114,13 @@ export class K8sComponent {
           },
         ],
       });
+
+      // this.k8sForm.markAllAsTouched();
     }
   }
 
   private __createWorker(): FormGroup {
-    return this.fb.group({
+    const group: FormGroup = this.fb.group({
       name: [
         '',
         [
@@ -115,8 +136,24 @@ export class K8sComponent {
       ipv6: [false],
       planetary: [true],
       rootFs: [2, [Validators.required, Validators.min(0.5)]],
-      nodeId: [null, Validators.required],
+      nodeId: [
+        null,
+        [Validators.required],
+        [
+          (ctrl: FormControl) => {
+            const filters: FilterOptions = {
+              cru: (group.get('cpu') as FormControl).value,
+              mru: (group.get('memory') as FormControl).value / 1024,
+              sru: (group.get('disk') as FormControl).value,
+              publicIPs: (group.get('ipv4') as FormControl).value,
+            };
+            return this.validatorsService.validatetNodeId(ctrl, filters);
+          },
+        ],
+      ],
     });
+
+    return group;
   }
 
   addWorker() {
@@ -124,9 +161,6 @@ export class K8sComponent {
   }
 
   private __createNode(data: any) {
-    const { KubernetesNodeModel } = window.configs.grid3_client;
-    console.log({ data });
-
     const node = new KubernetesNodeModel();
     node.name = data.name;
     node.node_id = data.nodeId;
@@ -141,7 +175,6 @@ export class K8sComponent {
   }
 
   private get __network() {
-    const { NetworkModel } = window.configs.grid3_client;
     const { name, ipRange } = this.network.value;
 
     const network = new NetworkModel();
@@ -154,8 +187,6 @@ export class K8sComponent {
     this.deploying = true;
 
     // prettier-ignore
-    const { K8SModel, GridClient, NetworkEnv, BackendStorageType } = window.configs.grid3_client;
-    const { HTTPMessageBusClient } = window.configs.ts_rmb_http_client;
 
     const masterNodes = [this.__createNode(this.master.value)];
     const workerNodes = this.workers.value.map(this.__createNode.bind(this));
@@ -171,25 +202,20 @@ export class K8sComponent {
     k8s.description = '';
     k8s.ssh_key = ssh;
 
-    const grid = new GridClient(
-      NetworkEnv.dev,
-      'guilt leaf sure wheel shield broom retreat zone stove cycle candy nation',
-      'secret',
-      new HTTPMessageBusClient(0, '', '', ''),
-      undefined,
-      BackendStorageType.tfkvstore
-    );
-
-    try {
-      await grid.connect();
-      await grid.k8s.deploy(k8s);
-      const details = await grid.k8s.getObj(name);
-
-      this.deploying = false;
-      console.log({ details });
-    } catch (error) {
-      this.deploying = false;
-      console.log({ error });
-    }
+    this.gridService.grid
+      .pipe(
+        mergeMap((grid) => {
+          return from(grid.k8s.deploy(k8s)).pipe(
+            mergeMap(() => {
+              return grid.k8s.getObj(name);
+            })
+          );
+        })
+      )
+      .subscribe({
+        next: console.log,
+        error: console.log,
+        complete: () => (this.deploying = false),
+      });
   }
 }
