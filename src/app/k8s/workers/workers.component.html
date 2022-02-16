@@ -1,7 +1,7 @@
 <mat-tab-group animationDuration="0" mat-align-tabs="center">
   <mat-tab
     *ngFor="let worker of workers; let i = index"
-    [label]="'Worker ' + i"
+    [label]="'Worker-' + i + ' (' + worker.status.toLocaleLowerCase() + ')'"
   >
     <br />
     <app-worker

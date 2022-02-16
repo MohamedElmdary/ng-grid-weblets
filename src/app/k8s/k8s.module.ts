@@ -23,6 +23,7 @@ import { NetworkComponent } from './network/network.component';
 import { WorkerComponent } from './worker/worker.component';
 import { WorkersComponent } from './workers/workers.component';
 import { NodeIdModule } from '../shared/modules/node-id/node-id.module';
+import { DetailsDialogModule } from '../shared/modules/details-dialog/details-dialog.module';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { NodeIdModule } from '../shared/modules/node-id/node-id.module';
     MatTabsModule,
     MatProgressSpinnerModule,
     NodeIdModule,
+    DetailsDialogModule,
   ],
   entryComponents: [K8sComponent],
 })

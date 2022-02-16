@@ -1,0 +1,117 @@
+<section [ngStyle]="{ width: '75vw' }">
+  <div
+    [ngStyle]="{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }"
+  >
+    <h4 class="mat-display-1" [ngStyle]="{ marginBottom: '0' }">
+      {{ title }}
+    </h4>
+
+    <mat-button-toggle-group #group="matButtonToggleGroup" value="details">
+      <mat-button-toggle value="details">Details</mat-button-toggle>
+      <mat-button-toggle value="json">Json</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <mat-divider [ngStyle]="{ margin: '20px 0' }"></mat-divider>
+
+  <mat-dialog-content *ngIf="group.value === 'details'">
+    <mat-tab-group mat-align-tabs="center" animationDuration="0">
+      <mat-tab
+        *ngFor="let worker of [master].concat(workers)"
+        [label]="worker.name"
+      >
+        <br />
+        <mat-form-field appearance="outline">
+          <mat-label>Contract ID</mat-label>
+          <input matInput disabled [value]="worker.contractId" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput disabled [value]="worker.name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Public IP V4</mat-label>
+          <input matInput disabled [value]="worker.publicIP?.ip ?? 'None'" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Public IP V6</mat-label>
+          <input matInput disabled [value]="worker.publicIP?.ip6 ?? 'None'" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Planetary Network IP</mat-label>
+          <input matInput disabled [value]="worker.planetary ?? 'None'" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Network Name</mat-label>
+          <input
+            matInput
+            disabled
+            [value]="worker.interfaces?.[0]?.network ?? 'None'"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>CPU</mat-label>
+          <input matInput disabled [value]="worker.capacity.cpu" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Memory</mat-label>
+          <input matInput disabled [value]="worker.capacity.memory" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Disk({{ worker.mounts[0].mountPoint }}) GB</mat-label>
+          <input
+            matInput
+            disabled
+            [value]="worker.mounts[0].size / (1024 * 1024 * 1024)"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>WireGuard</mat-label>
+          <input
+            matInput
+            disabled
+            [value]="worker.interfaces?.[0]?.ip ?? 'None'"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Flist</mat-label>
+          <input matInput disabled [value]="worker.flist ?? 'None'" />
+        </mat-form-field>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+
+  <mat-dialog-content
+    [ngStyle]="{ 'white-space': 'pre-wrap', fontSize: '18px' }"
+    *ngIf="group.value === 'json'"
+  >
+    {{ jsonInfo }}
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close color="warn">Cancel</button>
+    <button
+      mat-button
+      (click)="copy()"
+      cdkFocusInitial
+      color="primary"
+      *ngIf="group.value === 'json'"
+    >
+      Copy
+    </button>
+  </mat-dialog-actions>
+</section>

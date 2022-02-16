@@ -17,6 +17,9 @@ import {
   KubernetesNodeModel,
   NetworkModel,
 } from 'grid3_client';
+import { MatDialog } from '@angular/material/dialog';
+import { DetailsDialogComponent } from '../shared/modules/details-dialog/details-dialog.component';
+
 @Component({
   selector: 'app-k8s',
   templateUrl: './k8s.component.html',
@@ -75,7 +78,8 @@ export class K8sComponent {
   constructor(
     private readonly fb: FormBuilder,
     private readonly gridService: GridService,
-    private readonly validatorsService: ValidatorsService
+    private readonly validatorsService: ValidatorsService,
+    private readonly dialog: MatDialog
   ) {
     if (!environment.production) {
       const debug = new Date().getTime().toString().slice(0, 5);
@@ -114,8 +118,6 @@ export class K8sComponent {
           },
         ],
       });
-
-      // this.k8sForm.markAllAsTouched();
     }
   }
 
@@ -207,13 +209,17 @@ export class K8sComponent {
         mergeMap((grid) => {
           return from(grid.k8s.deploy(k8s)).pipe(
             mergeMap(() => {
-              return grid.k8s.getObj(name);
+              return grid.k8s.getObj(name) as Promise<K8SModel>;
             })
           );
         })
       )
       .subscribe({
-        next: console.log,
+        next: (data) => {
+          this.dialog.open(DetailsDialogComponent, {
+            data: { title: 'Kubernetes Cluster Details', type: 'k8s', data },
+          });
+        },
         error: console.log,
         complete: () => (this.deploying = false),
       });
