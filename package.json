@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~13.2.0",
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
+    "country-code-lookup": "^0.0.20",
     "grid3_client": "^1.1.4",
     "ngx-element": "^0.0.7",
     "rxjs": "~7.5.0",

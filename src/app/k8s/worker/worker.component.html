@@ -107,5 +107,11 @@
   <app-node-id-selector
     [nodeId]="nodeId"
     [watch]="[cpu, memory, disk, ipv4]"
+    [filters]="{
+      cru: cpu.value,
+      mru: memory.value / 1024,
+      sru: disk.value,
+      publicIPs: ipv4.value
+    }"
   ></app-node-id-selector>
 </form>

@@ -1,22 +1,10 @@
 import { Component } from '@angular/core';
-import {
-  FormGroup,
-  FormBuilder,
-  Validators,
-  FormArray,
-  FormControl,
-} from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { environment } from '../../environments/environment';
 import { from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { GridService } from '../shared/services/grid.service';
-import { ValidatorsService } from '../shared/services/validators.service';
-import {
-  K8SModel,
-  FilterOptions,
-  KubernetesNodeModel,
-  NetworkModel,
-} from 'grid3_client';
+import { K8SModel, KubernetesNodeModel, NetworkModel } from 'grid3_client';
 import { MatDialog } from '@angular/material/dialog';
 import { DetailsDialogComponent } from '../shared/modules/details-dialog/details-dialog.component';
 
@@ -78,48 +66,8 @@ export class K8sComponent {
   constructor(
     private readonly fb: FormBuilder,
     private readonly gridService: GridService,
-    private readonly validatorsService: ValidatorsService,
     private readonly dialog: MatDialog
-  ) {
-    if (!environment.production) {
-      const debug = new Date().getTime().toString().slice(0, 5);
-      this.k8sForm.setValue({
-        base: {
-          name: 'K8S' + debug,
-          token: '123456',
-          ssh: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUv2EQUnLL/Ei2+JRR/8EFIOrMxmlVLIc7psOZau6FE engm5081@gmail.com',
-        },
-        network: {
-          name: 'NW' + debug,
-          ipRange: '10.20.0.0/16',
-        },
-        master: {
-          name: 'M' + debug,
-          cpu: 2,
-          memory: 4 * 1024,
-          disk: 50,
-          ipv4: true,
-          ipv6: false,
-          planetary: true,
-          rootFs: 2,
-          nodeId: null,
-        },
-        workers: [
-          {
-            name: 'W' + debug,
-            cpu: 2,
-            memory: 4 * 1024,
-            disk: 50,
-            ipv4: false,
-            ipv6: false,
-            planetary: true,
-            rootFs: 2,
-            nodeId: 5,
-          },
-        ],
-      });
-    }
-  }
+  ) {}
 
   private __createWorker(): FormGroup {
     const group: FormGroup = this.fb.group({
@@ -138,21 +86,7 @@ export class K8sComponent {
       ipv6: [false],
       planetary: [true],
       rootFs: [2, [Validators.required, Validators.min(0.5)]],
-      nodeId: [
-        null,
-        [Validators.required],
-        [
-          (ctrl: FormControl) => {
-            const filters: FilterOptions = {
-              cru: (group.get('cpu') as FormControl).value,
-              mru: (group.get('memory') as FormControl).value / 1024,
-              sru: (group.get('disk') as FormControl).value,
-              publicIPs: (group.get('ipv4') as FormControl).value,
-            };
-            return this.validatorsService.validatetNodeId(ctrl, filters);
-          },
-        ],
-      ],
+      nodeId: [null, [Validators.required]],
     });
 
     return group;
@@ -187,8 +121,6 @@ export class K8sComponent {
 
   public async deployK8s(): Promise<void> {
     this.deploying = true;
-
-    // prettier-ignore
 
     const masterNodes = [this.__createNode(this.master.value)];
     const workerNodes = this.workers.value.map(this.__createNode.bind(this));

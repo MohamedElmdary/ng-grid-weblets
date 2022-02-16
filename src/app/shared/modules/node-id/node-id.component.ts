@@ -1,45 +1,45 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormControl, AbstractControl } from '@angular/forms';
 import { merge, Subscription } from 'rxjs';
-import { debounceTime, tap } from 'rxjs/operators';
+import { debounceTime, tap, switchMap, startWith } from 'rxjs/operators';
+import { NodeInfo, FilterOptions } from 'grid3_client';
+import { NodeService } from '../../services/node.service';
+import { byCountry } from 'country-code-lookup';
 
 @Component({
   selector: 'app-node-id-selector',
   template: `
     <mat-form-field appearance="outline">
       <mat-label>Node ID</mat-label>
-      <input
-        matInput
-        type="number"
-        placeholder="Node ID"
-        autocomplete="off"
-        [formControl]="nodeId"
-      />
+      <mat-select [formControl]="nodeId">
+        <mat-option *ngFor="let node of nodes" [value]="node.nodeId">
+          <div [ngStyle]="{ display: 'flex', alignItems: 'center' }">
+            <img
+              [src]="getCountryFlag(node.location.country)"
+              [ngStyle]="{ marginRight: '10px' }"
+              height="20"
+            />
+            <span>
+              {{ node.location.country }} | Node ID({{ node.nodeId }})
+            </span>
+          </div>
+        </mat-option>
+      </mat-select>
 
       <mat-progress-spinner
-        *ngIf="nodeId.status === 'PENDING'"
+        *ngIf="pending"
         matSuffix
         [diameter]="20"
         mode="indeterminate"
       ></mat-progress-spinner>
 
-      <mat-hint *ngIf="nodeId.status === 'VALID'">
-        Node ID({{ nodeId.value }}) is valid.
+      <mat-hint *ngIf="pending">
+        Fetching nodes with the required resources.
       </mat-hint>
 
-      <mat-hint *ngIf="nodeId.status === 'PENDING'">
-        Node ID({{ nodeId.value }}) is being validated ...
+      <mat-hint *ngIf="!pending && nodes.length === 0">
+        No nodes with the required resources.
       </mat-hint>
-
-      <mat-error *ngIf="nodeId.errors">
-        <span *ngIf="nodeId.errors['required']">Node ID is required.</span>
-        <span *ngIf="nodeId.errors['invalidNodeId']">
-          Node ID is not valid.
-        </span>
-        <span *ngIf="nodeId.errors['validating']">
-          Node ID needs to be revalidated.
-        </span>
-      </mat-error>
     </mat-form-field>
   `,
   styles: [
@@ -52,20 +52,49 @@ import { debounceTime, tap } from 'rxjs/operators';
 })
 export class NodeIdComponent implements OnInit, OnDestroy {
   @Input() nodeId!: FormControl;
-  @Input() watch: AbstractControl[] = [];
+  @Input() watch!: AbstractControl[];
+  @Input() filters!: FilterOptions;
 
-  private __subscription$!: Subscription;
+  pending = false;
+  nodes: NodeInfo[] = [];
+  private __listNodeId$!: Subscription;
+
+  constructor(private readonly nodeService: NodeService) {}
 
   ngOnInit(): void {
-    this.__subscription$ = merge(...this.watch.map((w) => w.valueChanges))
+    let _node: number;
+
+    this.__listNodeId$ = merge(...this.watch.map((w) => w.valueChanges))
       .pipe(
-        tap(() => this.nodeId.setErrors({ validating: true })),
-        debounceTime(1000)
+        startWith(null),
+        tap(() => {
+          if (this.nodeId.value !== null) {
+            this.nodes = [];
+            _node = this.nodeId.value;
+            this.nodeId.setValue(null);
+          }
+          this.pending = true;
+        }),
+        debounceTime(1000),
+        switchMap(() => this.nodeService.findNodes(this.filters)),
+        tap((nodes) => {
+          this.pending = false;
+          this.nodes = nodes;
+          if (nodes.findIndex((n) => n.nodeId === _node) > -1) {
+            this.nodeId.setValue(_node);
+            this.nodeId.updateValueAndValidity();
+          }
+        })
       )
-      .subscribe(() => this.nodeId.updateValueAndValidity());
+      .subscribe();
   }
 
   ngOnDestroy(): void {
-    this.__subscription$.unsubscribe();
+    this.__listNodeId$.unsubscribe();
+  }
+
+  getCountryFlag(country: string): string {
+    const code = byCountry(country)?.iso2.toLocaleLowerCase() ?? '';
+    return `https://www.worldatlas.com/r/w425/img/flag/${code}-flag.jpg`;
   }
 }
