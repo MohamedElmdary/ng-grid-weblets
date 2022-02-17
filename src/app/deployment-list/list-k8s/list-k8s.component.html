@@ -1,0 +1,78 @@
+<div [ngStyle]="{ display: 'flex', justifyContent: 'flex-end' }">
+  <button mat-button color="primary" [disabled]="loading" (click)="load()">
+    <mat-icon>sync</mat-icon>
+    <span>Refresh</span>
+  </button>
+</div>
+
+<table
+  mat-table
+  [dataSource]="dataSource"
+  *ngIf="!loading && dataSource.length"
+>
+  <ng-container matColumnDef="position">
+    <th mat-header-cell *matHeaderCellDef>No.</th>
+    <td mat-cell *matCellDef="let _; let i = index">
+      {{ i + 1 }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="ipv4">
+    <th mat-header-cell *matHeaderCellDef>Public IP V4</th>
+    <td mat-cell *matCellDef="let element">{{ element.ipv4 }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="ipv6">
+    <th mat-header-cell *matHeaderCellDef>Public IP V6</th>
+    <td mat-cell *matCellDef="let element">{{ element.ipv6 }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="planetary">
+    <th mat-header-cell *matHeaderCellDef>Planetary Network IP</th>
+    <td mat-cell *matCellDef="let element">{{ element.planetary }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="workers">
+    <th mat-header-cell *matHeaderCellDef>Workers</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.workers }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="billingRate">
+    <th mat-header-cell *matHeaderCellDef>Billing Rate</th>
+    <td mat-cell *matCellDef="let element">{{ element.billingRate }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let element">
+      <button
+        mat-stroked-button
+        (click)="showDetails(element)"
+        [ngStyle]="{ marginRight: '15px' }"
+      >
+        Show Details
+      </button>
+      <button mat-stroked-button color="primary" (click)="showDetails(element)">
+        Manage Workers
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="cols"></tr>
+  <tr mat-row *matRowDef="let row; columns: cols"></tr>
+</table>
+
+<div
+  [ngStyle]="{ display: 'flex', justifyContent: 'center', margin: '50px 0' }"
+  *ngIf="loading || !dataSource.length"
+>
+  <mat-spinner *ngIf="loading"></mat-spinner>
+  <p *ngIf="!loading">No Kubernetes Cluster were found.</p>
+</div>

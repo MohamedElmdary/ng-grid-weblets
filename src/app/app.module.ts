@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TfVmComponent } from './tf-vm/tf-vm.component';
 import { K8sModule } from './k8s/k8s.module';
+import { DeploymentListModule } from './deployment-list/deployment-list.module';
 
 @NgModule({
   declarations: [AppComponent, TfVmComponent],
@@ -17,6 +18,7 @@ import { K8sModule } from './k8s/k8s.module';
     MaterialModule,
     ReactiveFormsModule,
     K8sModule,
+    DeploymentListModule,
   ],
   providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
