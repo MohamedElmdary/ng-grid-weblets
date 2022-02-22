@@ -21,12 +21,15 @@
     "@angular/platform-browser": "~13.2.0",
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
+    "@ngxs/store": "^3.7.3",
     "country-code-lookup": "^0.0.20",
+    "crypto-js": "^4.1.1",
     "grid3_client": "^1.1.4",
     "ngx-element": "^0.0.7",
     "rxjs": "~7.5.0",
     "ts-rmb-http-client": "^1.0.3",
     "tslib": "^2.3.0",
+    "uuid": "^8.3.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -37,6 +40,7 @@
     "@angular/compiler-cli": "~13.2.0",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
+    "@types/uuid": "^8.3.4",
     "browserify-fs": "^1.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",

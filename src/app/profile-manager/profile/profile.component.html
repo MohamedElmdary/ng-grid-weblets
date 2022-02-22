@@ -1,0 +1,36 @@
+<form [formGroup]="form" (ngSubmit)="active()">
+  <mat-form-field appearance="outline">
+    <mat-label>Mnemonic</mat-label>
+
+    <input matInput placeholder="Your Mnemonic" formControlName="mnemonic" />
+
+    <mat-error *ngIf="mnemonic.errors">
+      <span *ngIf="mnemonic.errors['required']">Mnemonic is required</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Public SSH Key</mat-label>
+
+    <input
+      matInput
+      placeholder="Your Public SSH Key"
+      formControlName="sshKey"
+    />
+
+    <mat-error *ngIf="sshKey.errors">
+      <span *ngIf="sshKey.errors['required']">SSH Key is required</span>
+    </mat-error>
+  </mat-form-field>
+
+  <div [ngStyle]="{ display: 'flex', justifyContent: 'flex-end' }">
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="form.invalid || loading"
+    >
+      {{ loading ? "Loading..." : "Active" }}
+    </button>
+  </div>
+</form>

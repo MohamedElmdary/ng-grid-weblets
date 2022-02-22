@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  template: ` <tf-list></tf-list> `,
+  template: ` <tf-profile-manager></tf-profile-manager> `,
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {}

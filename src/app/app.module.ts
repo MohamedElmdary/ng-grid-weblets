@@ -10,15 +10,20 @@ import { TfVmComponent } from './tf-vm/tf-vm.component';
 import { K8sModule } from './k8s/k8s.module';
 import { DeploymentListModule } from './deployment-list/deployment-list.module';
 
+import { ProfileManagerModule } from '@app/profile-manager/profile-manager.module';
+import { NgxsModule } from '@ngxs/store';
+
 @NgModule({
   declarations: [AppComponent, TfVmComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    NgxsModule.forRoot(),
     MaterialModule,
     ReactiveFormsModule,
     K8sModule,
     DeploymentListModule,
+    ProfileManagerModule,
   ],
   providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
