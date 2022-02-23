@@ -23,7 +23,7 @@
             "customWebpackConfig": {
               "path": "./extra-webpack.config.ts"
             },
-            "outputPath": "dist/ng-grid-weblets",
+            "outputPath": "docs",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",

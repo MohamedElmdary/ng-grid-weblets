@@ -31,7 +31,8 @@
 
     <mat-button-toggle-group
       #group="matButtonToggleGroup"
-      value="new"
+      (valueChange)="password.reset()"
+      value="activate"
       [ngStyle]="{
         display: (active$ | async) ? 'none' : undefined
       }"
@@ -58,13 +59,26 @@
         color="primary"
         [ngStyle]="{ margin: '0 10px' }"
         (click)="save()"
-        disabled
       >
         Save
       </button>
 
-      <button mat-flat-button color="warn" disabled (click)="deactivate()">
-        Deactivate
+      <button
+        mat-flat-button
+        color="warn"
+        *ngIf="profile$ | async"
+        (click)="deactivate()"
+      >
+        Deactivate & Back
+      </button>
+
+      <button
+        mat-flat-button
+        color="warn"
+        *ngIf="!(profile$ | async)"
+        (click)="unactivate()"
+      >
+        Back
       </button>
     </div>
   </div>
@@ -91,6 +105,7 @@
             [profile]="profile"
             [activeProfile]="profile$ | async"
             [index]="i"
+            (onActive)="save()"
           ></app-profile>
         </mat-tab>
       </ng-container>
@@ -115,12 +130,16 @@
         (click)="hide = !hide"
         [attr.aria-label]="'Hide password'"
         [attr.aria-pressed]="hide"
+        type="button"
       >
         <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
       </button>
 
+      <!-- prettier-ignore -->
       <mat-error *ngIf="password.errors">
         <span *ngIf="password.errors['required']">Password is required</span>
+        <span *ngIf="password.errors['found']">Store with same password already found</span>
+        <span *ngIf="password.errors['notfound']">No Store found with this password</span>
       </mat-error>
     </mat-form-field>
 

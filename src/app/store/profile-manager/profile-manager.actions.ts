@@ -19,11 +19,15 @@ export class ActiveProfile {
   constructor(public index: number, public profile: IProfile) {}
 }
 
-// export class SetProfileManagerActive {
-//   static readonly type = '[ProfileManager] Set Profile Manager Active';
-//   constructor(public active: boolean = false, public password: string = '') {}
-// }
+export class UnActivateProfileManager {
+  static readonly type = '[ProfileManger] UnActivate Profile Manager';
+}
 
-// export class AddProfileManager {
-//   static readonly type = '[ProfileManager] Add Profile Manager';
-// }
+export class DeactivateProfile {
+  static readonly type = '[ProfileManger] Deactivate Profile';
+}
+
+export class LoadProfileManager {
+  static readonly type = '[ProfileManager] Load Profile Manager';
+  constructor(public password: string, public hash: string) {}
+}

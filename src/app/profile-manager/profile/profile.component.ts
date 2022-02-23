@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -18,6 +18,8 @@ export class ProfileComponent implements OnInit {
   @Input() profile!: IProfile;
   @Input() index!: number;
   @Input() activeProfile!: IProfile | null;
+  @Output() onActive = new EventEmitter<void>();
+
   hide = true;
 
   loading = false;
@@ -54,6 +56,9 @@ export class ProfileComponent implements OnInit {
     this.store
       .dispatch(new ActiveProfile(this.index, this.form.value))
       .subscribe({
+        next: () => {
+          this.onActive.emit();
+        },
         error: (error) => {
           console.log({ error });
         },

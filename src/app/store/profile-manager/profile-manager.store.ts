@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { GridService } from '@app/shared/services/grid.service';
 import { State, Action, StateContext, Selector, NgxsOnInit } from '@ngxs/store';
 import { patch, append, removeItem, updateItem } from '@ngxs/store/operators';
+import { enc } from 'crypto-js';
+import { decrypt } from 'crypto-js/aes';
 import { GridClient } from 'grid3_client';
-import { forkJoin, from, of, timer } from 'rxjs';
+import { from, of, timer } from 'rxjs';
 import {
   catchError,
-  delay,
   map,
   mergeMap,
-  repeat,
   retry,
   startWith,
   tap,
@@ -20,7 +20,10 @@ import {
   ActiveProfile,
   AddNewProfile,
   CreateNewProfileManager,
+  DeactivateProfile,
+  LoadProfileManager,
   RemoveProfile,
+  UnActivateProfileManager,
 } from './profile-manager.actions';
 import { IProfile, IProfileManagerState } from './profile-manager.types';
 
@@ -30,10 +33,8 @@ function __createProfile() {
   return {
     id: v4(),
     address: '',
-    mnemonic:
-      'guilt leaf sure wheel shield broom retreat zone stove cycle candy nation',
-    sshKey:
-      'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUv2EQUnLL/Ei2+JRR/8EFIOrMxmlVLIc7psOZau6FE engm5081@gmail.com',
+    mnemonic: '',
+    sshKey: '',
     twinId: 0,
   } as IProfile;
 }
@@ -41,11 +42,11 @@ function __createProfile() {
 @State<IProfileManagerState>({
   name: 'ProfileManager',
   defaults: {
-    password: 'secret',
+    password: '',
     profiles: [__createProfile()],
     activeProfile: -1,
     balance: 0,
-    active: true,
+    active: false,
   },
 })
 @Injectable()
@@ -150,33 +151,52 @@ export class ProfileManagerState implements NgxsOnInit {
       );
   }
 
-  // @Action(SetProfileManagerActive)
-  // public onSetProfileManagerActive(
-  //   ctx: Ctx,
-  //   { active, password }: SetProfileManagerActive
-  // ) {
-  //   ctx.setState(
-  //     patch<IProfileManagerState>({
-  //       active,
-  //       password,
-  //     })
-  //   );
-  // }
+  @Action(UnActivateProfileManager)
+  public onUnActivateProfileManager(ctx: Ctx) {
+    const profiles = ctx.getState().profiles.map(
+      patch<IProfile>({
+        twinId: 0,
+        address: '',
+      })
+    );
 
-  // @Action(AddProfileManager)
-  // public onAddProfileManager(ctx: Ctx) {
-  //   const profile: IProfileManager = {
-  //     name: 'New Profile',
-  //     address: '',
-  //     mnemonic: '',
-  //     sshKey: '',
-  //     twinId: 0,
-  //   };
+    return ctx.setState(
+      patch<IProfileManagerState>({
+        active: false,
+        activeProfile: -1,
+        profiles,
+      })
+    );
+  }
 
-  //   ctx.setState(
-  //     patch<IProfileManagerState>({
-  //       profiles: append([profile]),
-  //     })
-  //   );
-  // }
+  @Action(DeactivateProfile)
+  public onDeactivateProfile(ctx: Ctx) {
+    return this.gridService.getGrid().pipe(
+      mergeMap((grid) => from(grid.disconnect())),
+      mergeMap(() => ctx.dispatch(new UnActivateProfileManager()))
+    );
+  }
+
+  @Action(LoadProfileManager)
+  public onLoadProfileManager(
+    ctx: Ctx,
+    { hash, password }: LoadProfileManager
+  ) {
+    const dataHash = localStorage.getItem(hash) as string;
+    const { profiles, activeProfile } = JSON.parse(
+      decrypt(dataHash, password).toString(enc.Utf8)
+    );
+    ctx.patchState({
+      active: true,
+      password,
+      activeProfile,
+      profiles,
+    });
+
+    if (activeProfile > -1) {
+      ctx
+        .dispatch(new ActiveProfile(activeProfile, profiles[activeProfile]))
+        .subscribe();
+    }
+  }
 }

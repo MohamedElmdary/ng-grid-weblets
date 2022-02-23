@@ -18,6 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ProfileComponent } from './profile/profile.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatTabsModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatSnackBarModule,
   ],
   entryComponents: [ProfileManagerComponent],
 })
