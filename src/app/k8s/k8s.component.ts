@@ -136,7 +136,8 @@ export class K8sComponent {
     k8s.description = '';
     k8s.ssh_key = ssh;
 
-    this.gridService.grid
+    this.gridService
+      .getGrid()
       .pipe(
         mergeMap((grid) => {
           return from(grid.k8s.deploy(k8s)).pipe(
