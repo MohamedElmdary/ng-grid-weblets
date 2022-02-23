@@ -1,1 +1,27 @@
-<p>profile-manager works!</p>
+<button mat-stroked-button [matMenuTriggerFor]="menu">
+  <mat-icon>manage_accounts</mat-icon>
+  <span *ngIf="balance$ | async as balance">
+    {{ balance }}
+    <span class="mat-caption">TFT</span>
+  </span>
+</button>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="open()">
+    <span>Profile Manager</span>
+  </button>
+
+  <ng-container *ngIf="profile$ | async as profile">
+    <button mat-menu-item disabled>
+      <span>
+        Twin ID: <span class="mat-body-2">{{ profile.twinId }}</span>
+      </span>
+    </button>
+
+    <button mat-menu-item disabled>
+      <span>
+        Address: <span class="mat-body-2">{{ profile.address }}</span>
+      </span>
+    </button>
+  </ng-container>
+</mat-menu>

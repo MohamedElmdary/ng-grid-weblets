@@ -1,10 +1,19 @@
 import { Injectable } from '@angular/core';
 import { GridService } from '@app/shared/services/grid.service';
-import { State, Action, StateContext, Selector } from '@ngxs/store';
+import { State, Action, StateContext, Selector, NgxsOnInit } from '@ngxs/store';
 import { patch, append, removeItem, updateItem } from '@ngxs/store/operators';
 import { GridClient } from 'grid3_client';
-import { forkJoin, from } from 'rxjs';
-import { map, mergeMap, retry, tap } from 'rxjs/operators';
+import { forkJoin, from, of, timer } from 'rxjs';
+import {
+  catchError,
+  delay,
+  map,
+  mergeMap,
+  repeat,
+  retry,
+  startWith,
+  tap,
+} from 'rxjs/operators';
 import { v4 } from 'uuid';
 
 import {
@@ -40,7 +49,7 @@ function __createProfile() {
   },
 })
 @Injectable()
-export class ProfileManagerState {
+export class ProfileManagerState implements NgxsOnInit {
   @Selector()
   static active(state: IProfileManagerState): boolean {
     return state.active;
@@ -56,7 +65,30 @@ export class ProfileManagerState {
     return state.profiles;
   }
 
+  @Selector()
+  static balance(state: IProfileManagerState): number | undefined {
+    return state.balance;
+  }
+
   constructor(private readonly gridService: GridService) {}
+
+  ngxsOnInit(ctx: StateContext<IProfileManagerState>) {
+    timer(5 * 60 * 1000) // 5 mins
+      .pipe(
+        startWith(0),
+        mergeMap(() => this.gridService.getGrid()),
+        mergeMap((grid) =>
+          from(grid.balance.getMyBalance()).pipe(
+            retry(3),
+            catchError(() => of({ free: 0 }))
+          )
+        ),
+        map(({ free }) => free)
+      )
+      .subscribe((balance) => {
+        ctx.patchState({ balance });
+      });
+  }
 
   @Action(CreateNewProfileManager)
   public onCreateNewProfileManager(

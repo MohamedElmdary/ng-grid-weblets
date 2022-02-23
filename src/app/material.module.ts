@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 const cmps = [
   MatTabsModule,
@@ -18,6 +19,7 @@ const cmps = [
   MatSlideToggleModule,
   MatIconModule,
   MatDividerModule,
+  MatToolbarModule,
 ];
 
 @NgModule({

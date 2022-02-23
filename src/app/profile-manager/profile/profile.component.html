@@ -7,7 +7,18 @@
       placeholder="Your Mnemonic"
       formControlName="mnemonic"
       [readonly]="isActive"
+      [type]="hide ? 'password' : 'text'"
     />
+    <button
+      mat-icon-button
+      matSuffix
+      (click)="hide = !hide"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="hide"
+      type="button"
+    >
+      <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+    </button>
 
     <mat-error *ngIf="mnemonic.errors">
       <span *ngIf="mnemonic.errors['required']">Mnemonic is required</span>
@@ -28,6 +39,18 @@
       <span *ngIf="sshKey.errors['required']">SSH Key is required</span>
     </mat-error>
   </mat-form-field>
+
+  <ng-container *ngIf="isActive">
+    <mat-form-field appearance="outline">
+      <mat-label>Twin ID</mat-label>
+      <input matInput readonly [value]="activeProfile?.twinId" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Address</mat-label>
+      <input matInput readonly [value]="activeProfile?.address" />
+    </mat-form-field>
+  </ng-container>
 
   <div [ngStyle]="{ display: 'flex', justifyContent: 'flex-end' }">
     <button

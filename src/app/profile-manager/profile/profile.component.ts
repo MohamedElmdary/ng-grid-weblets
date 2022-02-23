@@ -18,6 +18,7 @@ export class ProfileComponent implements OnInit {
   @Input() profile!: IProfile;
   @Input() index!: number;
   @Input() activeProfile!: IProfile | null;
+  hide = true;
 
   loading = false;
   form!: FormGroup;
