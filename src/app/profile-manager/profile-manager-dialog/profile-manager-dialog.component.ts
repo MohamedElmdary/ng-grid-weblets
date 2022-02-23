@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ProfileManagerState } from '@app/store/profile-manager/profile-manager.store';
 import { IProfile } from '@app/store/profile-manager/profile-manager.types';
@@ -9,6 +9,7 @@ import {
   CreateNewProfileManager,
   RemoveProfile,
 } from '@app/store/profile-manager/profile-manager.actions';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-profile-manager-dialog',
@@ -31,7 +32,8 @@ export class ProfileManagerDialogComponent {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly store: Store
+    private readonly store: Store,
+    private readonly dialogRef: MatDialogRef<ProfileManagerDialogComponent>
   ) {}
 
   loadProfiles(): void {

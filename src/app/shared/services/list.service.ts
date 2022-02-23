@@ -45,7 +45,7 @@ export class ListService {
     let grid: GridClient;
 
     // prettier-ignore
-    return this.gridService.grid.pipe(
+    return this.gridService.getGrid().pipe(
       tap((g) => (grid = g)),
       mergeMap(() => from(grid[type].list())),
       mergeMap((names) => of(...names)),

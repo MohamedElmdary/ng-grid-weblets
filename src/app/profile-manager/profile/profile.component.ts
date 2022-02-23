@@ -5,7 +5,6 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { GridService } from '@app/shared/services/grid.service';
 import { ActiveProfile } from '@app/store/profile-manager/profile-manager.actions';
 import { IProfile } from '@app/store/profile-manager/profile-manager.types';
 import { Store } from '@ngxs/store';
@@ -18,6 +17,7 @@ import { Store } from '@ngxs/store';
 export class ProfileComponent implements OnInit {
   @Input() profile!: IProfile;
   @Input() index!: number;
+  @Input() activeProfile!: IProfile | null;
 
   loading = false;
   form!: FormGroup;
@@ -28,6 +28,10 @@ export class ProfileComponent implements OnInit {
 
   get sshKey(): FormControl {
     return this.form.get('sshKey') as FormControl;
+  }
+
+  get isActive(): boolean {
+    return this.profile.id === this.activeProfile?.id;
   }
 
   constructor(

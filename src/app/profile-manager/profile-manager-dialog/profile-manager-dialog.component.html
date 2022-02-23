@@ -1,8 +1,3 @@
-<p>
-  Profile:
-  {{ profile$ | async | json }}
-</p>
-
 <section [ngStyle]="{ width: '75vw' }">
   <div
     [ngStyle]="{
@@ -92,7 +87,11 @@
               <mat-icon>close</mat-icon>
             </button>
           </ng-template>
-          <app-profile [profile]="profile" [index]="i"></app-profile>
+          <app-profile
+            [profile]="profile"
+            [activeProfile]="profile$ | async"
+            [index]="i"
+          ></app-profile>
         </mat-tab>
       </ng-container>
     </mat-tab-group>

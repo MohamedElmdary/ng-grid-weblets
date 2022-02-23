@@ -95,53 +95,27 @@ export class ProfileManagerState {
     const state = ctx.getState();
 
     let grid: GridClient;
-    return this.gridService.__createNewGrid(profile, state.password).pipe(
-      retry(3),
-      tap((g) => (grid = g)),
-      mergeMap(() => from(grid.twins.get_my_twin_id()).pipe(retry(3))),
-      tap((twinId) => {
-        ctx.setState(
-          patch<IProfileManagerState>({
-            activeProfile: index,
-            profiles: updateItem(index, {
-              ...profile,
-              address: grid.twins.client.client.address,
-              twinId,
-            }),
-          })
-        );
-      })
-      // tap((grid) => {
-      //   if (grid) {
-      //     ctx.setState(
-      //       patch<IProfileManagerState>({
-      //         profiles: updateItem(index, )
-      //       })
-      //     );
-      //   }
-      // })
-    );
-    /* import type { IProfile } from "../types/Profile";
-const { GridClient } = window.configs?.grid3_client ?? {};
-const { HTTPMessageBusClient } = window.configs?.client ?? {};
-
-export default function validateMnemonics(profile: IProfile) {
-  const { networkEnv, mnemonics, storeSecret } = profile;
-  const http = new HTTPMessageBusClient(0, "", "", "");
-  const grid = new GridClient(
-    networkEnv as any,
-    mnemonics,
-    storeSecret,
-    http,
-    undefined,
-    "tfkvstore" as any
-  );
-  return grid
-    .connect()
-    .then(() => grid.disconnect())
-    .then(() => true)
-    .catch(() => false);
-} */
+    return this.gridService
+      .getGrid({ profile, storeSecret: state.password })
+      .pipe(
+        retry(3),
+        tap((g) => (grid = g)),
+        mergeMap(() => from(grid.twins.get_my_twin_id()).pipe(retry(3))),
+        tap((twinId) => {
+          ctx.setState(
+            patch<IProfileManagerState>({
+              activeProfile: index,
+              profiles: updateItem(index, {
+                id: state.profiles[index].id,
+                mnemonic: profile.mnemonic,
+                sshKey: profile.sshKey,
+                address: grid.twins.client.client.address,
+                twinId,
+              }),
+            })
+          );
+        })
+      );
   }
 
   // @Action(SetProfileManagerActive)

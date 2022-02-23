@@ -27,53 +27,53 @@
         <br />
         <mat-form-field appearance="outline">
           <mat-label>Contract ID</mat-label>
-          <input matInput disabled [value]="worker.contractId" />
+          <input matInput readonly [value]="worker.contractId" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
-          <input matInput disabled [value]="worker.name" />
+          <input matInput readonly [value]="worker.name" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Public IP V4</mat-label>
-          <input matInput disabled [value]="worker.publicIP?.ip ?? 'None'" />
+          <input matInput readonly [value]="worker.publicIP?.ip ?? 'None'" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Public IP V6</mat-label>
-          <input matInput disabled [value]="worker.publicIP?.ip6 ?? 'None'" />
+          <input matInput readonly [value]="worker.publicIP?.ip6 ?? 'None'" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Planetary Network IP</mat-label>
-          <input matInput disabled [value]="worker.planetary ?? 'None'" />
+          <input matInput readonly [value]="worker.planetary ?? 'None'" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Network Name</mat-label>
           <input
             matInput
-            disabled
+            readonly
             [value]="worker.interfaces?.[0]?.network ?? 'None'"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>CPU</mat-label>
-          <input matInput disabled [value]="worker.capacity.cpu" />
+          <input matInput readonly [value]="worker.capacity.cpu" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Memory</mat-label>
-          <input matInput disabled [value]="worker.capacity.memory" />
+          <input matInput readonly [value]="worker.capacity.memory" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Disk({{ worker.mounts[0].mountPoint }}) GB</mat-label>
           <input
             matInput
-            disabled
+            readonly
             [value]="worker.mounts[0].size / (1024 * 1024 * 1024)"
           />
         </mat-form-field>
@@ -82,14 +82,14 @@
           <mat-label>WireGuard</mat-label>
           <input
             matInput
-            disabled
+            readonly
             [value]="worker.interfaces?.[0]?.ip ?? 'None'"
           />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Flist</mat-label>
-          <input matInput disabled [value]="worker.flist ?? 'None'" />
+          <input matInput readonly [value]="worker.flist ?? 'None'" />
         </mat-form-field>
       </mat-tab>
     </mat-tab-group>
