@@ -7,6 +7,7 @@ import { GridService } from '../shared/services/grid.service';
 import { K8SModel, KubernetesNodeModel, NetworkModel } from 'grid3_client';
 import { MatDialog } from '@angular/material/dialog';
 import { DetailsDialogComponent } from '../shared/modules/details-dialog/details-dialog.component';
+import { LogService } from '@app/shared/services/log.service';
 
 @Component({
   selector: 'app-k8s',
@@ -44,7 +45,7 @@ export class K8sComponent {
 
     master: this.__createWorker(),
 
-    workers: this.fb.array([this.__createWorker()]),
+    workers: this.fb.array([]),
   });
 
   get base(): FormGroup {
@@ -66,8 +67,36 @@ export class K8sComponent {
   constructor(
     private readonly fb: FormBuilder,
     private readonly gridService: GridService,
-    private readonly dialog: MatDialog
-  ) {}
+    private readonly dialog: MatDialog,
+    private readonly logService: LogService
+  ) {
+    const date = new Date();
+    const time = date.getTime().toString();
+    const suffix = time.slice(time.length - 7);
+    this.k8sForm.setValue({
+      base: {
+        name: 'k8sDemo' + suffix,
+        token: '123456',
+        ssh: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUv2EQUnLL/Ei2+JRR/8EFIOrMxmlVLIc7psOZau6FE engm5081@gmail.com',
+      },
+      network: {
+        name: 'K8sNW' + suffix,
+        ipRange: '10.20.0.0/16',
+      },
+      master: {
+        name: 'K8sMS' + suffix,
+        cpu: 2,
+        memory: 4 * 1024,
+        disk: 10,
+        ipv4: false,
+        ipv6: false,
+        planetary: true,
+        rootFs: 2,
+        nodeId: 8,
+      },
+      workers: [],
+    });
+  }
 
   private __createWorker(): FormGroup {
     const group: FormGroup = this.fb.group({
@@ -136,25 +165,31 @@ export class K8sComponent {
     k8s.description = '';
     k8s.ssh_key = ssh;
 
-    this.gridService
-      .getGrid()
-      .pipe(
-        mergeMap((grid) => {
-          return from(grid.k8s.deploy(k8s)).pipe(
-            mergeMap(() => {
-              return grid.k8s.getObj(name) as Promise<K8SModel>;
-            })
-          );
-        })
+    this.logService
+      .withLog(
+        this.gridService.getGrid().pipe(
+          mergeMap((grid) => {
+            return from(grid.k8s.deploy(k8s)).pipe(
+              mergeMap(() => {
+                return grid.k8s.getObj(name) as Promise<K8SModel>;
+              })
+            );
+          })
+        )
       )
       .subscribe({
         next: (data) => {
-          this.dialog.open(DetailsDialogComponent, {
-            data: { title: 'Kubernetes Cluster Details', type: 'k8s', data },
-          });
+          console.log({ data });
+
+          // this.dialog.open(DetailsDialogComponent, {
+          //   data: { title: 'Kubernetes Cluster Details', type: 'k8s', data },
+          // });
         },
         error: console.log,
-        complete: () => (this.deploying = false),
+        complete: () => {
+          this.deploying = false;
+          console.log('done');
+        },
       });
   }
 }

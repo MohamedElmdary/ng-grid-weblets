@@ -12,7 +12,7 @@ interface IUrsl {
   rmbProxy: string;
 }
 
-interface GetGridOptions {
+export interface GetGridOptions {
   profile?: IProfile;
   storeSecret?: string;
   projectName?: string;

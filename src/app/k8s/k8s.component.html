@@ -52,10 +52,10 @@
       <button
         mat-raised-button
         color="primary"
-        [disabled]="k8sForm.status !== 'VALID'"
+        [disabled]="k8sForm.status !== 'VALID' || deploying"
         (click)="deployK8s()"
       >
-        Deploy
+        {{ deploying ? "Loading..." : "Deploy" }}
       </button>
     </div>
   </mat-card>
