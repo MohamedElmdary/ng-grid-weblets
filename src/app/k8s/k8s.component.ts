@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { environment } from '../../environments/environment';
-import { from } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
+import { catchError, mergeMap, tap } from 'rxjs/operators';
 import { GridService } from '../shared/services/grid.service';
 import { K8SModel, KubernetesNodeModel, NetworkModel } from 'grid3_client';
 import { MatDialog } from '@angular/material/dialog';
@@ -148,6 +148,8 @@ export class K8sComponent {
     return network;
   }
 
+  deployer$!: Observable<unknown>;
+
   public async deployK8s(): Promise<void> {
     this.deploying = true;
 
@@ -165,31 +167,24 @@ export class K8sComponent {
     k8s.description = '';
     k8s.ssh_key = ssh;
 
-    this.logService
-      .withLog(
-        this.gridService.getGrid().pipe(
-          mergeMap((grid) => {
-            return from(grid.k8s.deploy(k8s)).pipe(
-              mergeMap(() => {
-                return grid.k8s.getObj(name) as Promise<K8SModel>;
-              })
-            );
+    this.deployer$ = this.gridService.getGrid().pipe(
+      mergeMap((grid) => {
+        return from(grid.k8s.deploy(k8s)).pipe(
+          mergeMap(() => {
+            return grid.k8s.getObj(name) as Promise<K8SModel>;
           })
-        )
-      )
-      .subscribe({
-        next: (data) => {
-          console.log({ data });
-
-          // this.dialog.open(DetailsDialogComponent, {
-          //   data: { title: 'Kubernetes Cluster Details', type: 'k8s', data },
-          // });
-        },
-        error: console.log,
-        complete: () => {
-          this.deploying = false;
-          console.log('done');
-        },
-      });
+        );
+      }),
+      catchError((err) => {
+        this.deploying = false;
+        return err;
+      }),
+      tap((data) => {
+        this.deploying = false;
+        this.dialog.open(DetailsDialogComponent, {
+          data: { title: 'Kubernetes Cluster Details', type: 'k8s', data },
+        });
+      })
+    );
   }
 }

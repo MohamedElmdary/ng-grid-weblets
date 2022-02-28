@@ -3,7 +3,11 @@
     <h4 class="k8s__title mat-display-1">Deploy a Kubernetes Cluster</h4>
     <mat-divider></mat-divider>
 
-    <mat-stepper orientation="horizontal" linear>
+    <mat-stepper
+      orientation="horizontal"
+      linear
+      [ngStyle]="{ display: deployer$ ? 'none' : undefined }"
+    >
       <mat-step label="Base" [stepControl]="base">
         <app-base [form]="base"></app-base>
 
@@ -46,6 +50,8 @@
         </div>
       </mat-step>
     </mat-stepper>
+
+    <app-logger *ngIf="deployer$" [deployer]="deployer$"></app-logger>
     <mat-divider> </mat-divider>
 
     <div class="to-end" [ngStyle]="{ marginTop: '15px' }">

@@ -15,32 +15,25 @@ export class LogInfo {
 export class LogService {
   withLog<T>(obs: Observable<T>) {
     const _obs = new Subject();
-
-    events.addListener('logs', (e) => {
+    const _fn = (e: any) => {
       _obs.next(e);
-    });
+    };
+    const _removeListener = () => events.removeListener('logs', _fn);
+
+    events.addListener('logs', _fn);
 
     obs.pipe(take(1)).subscribe({
       next: (res) => {
         _obs.next(res);
         _obs.complete();
+        _removeListener();
       },
       error: (err) => {
         _obs.error(err);
+        _removeListener();
       },
     });
 
     return _obs.asObservable();
-    // events.addListener('log', (e) => {
-    //   console.log(e);
-    // });
-
-    // return obs.pipe(
-    //   tap(() => console.log('done')),
-    //   catchError((error) => {
-    //     console.log('Error');
-    //     return error;
-    //   })
-    // ) as any;
   }
 }
